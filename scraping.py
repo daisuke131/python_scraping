@@ -12,7 +12,8 @@ def main():
 
   # 検索ワード入力
   textbox = driver.find_element_by_xpath('//*[@id="srchWord"]')
-  textbox.send_keys("土日")
+  search_word = input("検索ワード>>")
+  textbox.send_keys(search_word)
 
   # 検索ボタン押下
   search_button = driver.find_element_by_xpath('//*[@id="srchButton"]/span')
