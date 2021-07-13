@@ -1,3 +1,4 @@
+from pathlib import Path
 from time import sleep
 
 import pandas as pd
@@ -72,6 +73,10 @@ def main():
 
 
 def write_csv(search_word, corp_data_list):
+    # ディレクトリがないとエラーになるため作成
+    dir = Path("./csv")
+    dir.mkdir(parents=True, exist_ok=True)
+
     # csvファイル名に検索ワードを加える。
     csv_path = f"./csv/{search_word}_data.csv"
     # ヘッダー作成
@@ -82,17 +87,23 @@ def write_csv(search_word, corp_data_list):
 
 
 def get_corp_data(driver):
-    corp_name = driver.find_element_by_xpath(
-        '//*[@id="companyHead"]/div[1]/div/div/div[1]/h1'
-    ).text
-    corp_income = driver.find_element_by_xpath(
-        '//*[@id="employTreatmentListDescText3190"]'
-    ).text
-    corp_work_hours = driver.find_element_by_xpath(
-        '//*[@id="employTreatmentListDescText3270"]'
-    ).text
+    corp_name = get_data_judge(
+        driver, '//*[@id="companyHead"]/div[1]/div/div/div[1]/h1'
+    )
+    corp_income = get_data_judge(driver, '//*[@id="employTreatmentListDescText3190"]')
+    corp_work_hours = get_data_judge(
+        driver, '//*[@id="employTreatmentListDescText3270"]'
+    )
     corp_URL = driver.current_url
     return [corp_name, corp_income, corp_work_hours, corp_URL]
+
+
+def get_data_judge(driver, xpath):
+    try:
+        return driver.find_element_by_xpath(xpath).text
+    except Exception:
+        # 個別ページから取得している為passではなく空白を返す。
+        return ""
 
 
 if __name__ == "__main__":
