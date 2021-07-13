@@ -65,9 +65,11 @@ def main():
             break
 
     # CSVに書き込み
-    write_csv(search_word, corp_data_list)
-    # 件数確認用
-    print(search_count)
+    if search_count > 0:
+        write_csv(search_word, corp_data_list)
+        print(f"{search_count}件出力しました。")
+    else:
+        print(f"{search_count}件です。")
     # ブラウザ閉じる
     driver.quit()
 
@@ -87,6 +89,7 @@ def write_csv(search_word, corp_data_list):
 
 
 def get_corp_data(driver):
+    # get_data_judgeでエラーならpass
     corp_name = get_data_judge(
         driver, '//*[@id="companyHead"]/div[1]/div/div/div[1]/h1'
     )
@@ -102,8 +105,7 @@ def get_data_judge(driver, xpath):
     try:
         return driver.find_element_by_xpath(xpath).text
     except Exception:
-        # 個別ページから取得している為passではなく空白を返す。
-        return ""
+        pass
 
 
 if __name__ == "__main__":
