@@ -5,8 +5,17 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+from log_setting import log_setting
+
+log = log_setting()
+
 
 def main():
+    # ログ出力設定
+    # log = log_setting()
+    global log
+    log.debug("===== start =====")
+
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome("chromedriver", options=options)
@@ -22,7 +31,11 @@ def main():
     search_button = driver.find_element_by_xpath('//*[@id="srchButton"]/span')
     search_button.click()
 
+    log.info(f"{search_word}で検索")
+
     search_count = 0
+    data_count = 0
+
     corp_data_list = []
 
     while 1:
@@ -55,6 +68,9 @@ def main():
             # アクティブ画面(タブ)切り替え⇨元画面へ
             driver.switch_to.window(driver.window_handles[0])
 
+            data_count += 1
+            log.info(f"{data_count}件書き込み完了")
+
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         # 次のページへ
@@ -65,11 +81,14 @@ def main():
             break
 
     # CSVに書き込み
-    if search_count > 0:
+    if data_count > 0:
         write_csv(search_word, corp_data_list)
-        print(f"{search_count}件出力しました。")
+        log.info(f"{data_count}件出力しました。")
+        print(f"{search_count}件見つかりました。")
     else:
-        print(f"{search_count}件です。")
+        log.info(f"{data_count}件です。")
+
+    log.debug("===== end =====")
     # ブラウザ閉じる
     driver.quit()
 
@@ -91,20 +110,24 @@ def write_csv(search_word, corp_data_list):
 def get_corp_data(driver):
     # get_data_judgeでエラーならpass
     corp_name = get_data_judge(
-        driver, '//*[@id="companyHead"]/div[1]/div/div/div[1]/h1'
+        driver, "会社名", '//*[@id="companyHead"]/div[1]/div/div/div[1]/h1'
     )
-    corp_income = get_data_judge(driver, '//*[@id="employTreatmentListDescText3190"]')
+    corp_income = get_data_judge(
+        driver, "基本給", '//*[@id="employTreatmentListDescText3190"]'
+    )
     corp_work_hours = get_data_judge(
-        driver, '//*[@id="employTreatmentListDescText3270"]'
+        driver, "勤務時間", '//*[@id="employTreatmentListDescText3270"]'
     )
     corp_URL = driver.current_url
     return [corp_name, corp_income, corp_work_hours, corp_URL]
 
 
-def get_data_judge(driver, xpath):
+def get_data_judge(driver, data_name, xpath):
+    global log
     try:
         return driver.find_element_by_xpath(xpath).text
     except Exception:
+        log.critical(f"{data_name}が取得できませんでした。")
         pass
 
 
