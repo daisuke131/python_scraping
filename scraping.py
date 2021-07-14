@@ -21,9 +21,21 @@ def main():
     sleep(3)
 
     # 検索ワード入力
-    textbox = driver.find_element_by_xpath('//*[@id="srchWord"]')
     search_word = input("検索ワード>>")
+    search_word = search_word.split()
+    search_word = " ".join(search_word)
+    textbox = driver.find_element_by_xpath('//*[@id="srchWord"]')
     textbox.send_keys(search_word)
+
+    # URL クエリパラメータ
+    # search_word = "%20".join(search_word)
+    # search_query_url = (
+    #     "https://job.mynavi.jp/22/pc/corpinfo/searchCorpListByGenCond/index?q="
+    #     + search_word
+    # )
+    # driver = set_driver(False)
+    # driver.get(search_query_url + search_word)
+    # sleep(3)
 
     # 検索ボタン押下
     search_button = driver.find_element_by_xpath('//*[@id="srchButton"]/span')
