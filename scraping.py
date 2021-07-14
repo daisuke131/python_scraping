@@ -12,8 +12,6 @@ log = log_setting()
 
 def main():
     # ログ出力設定
-    # log = log_setting()
-    global log
     log.debug("===== start =====")
 
     options = Options()
@@ -123,7 +121,6 @@ def get_corp_data(driver):
 
 
 def get_data_judge(driver, data_name, xpath):
-    global log
     try:
         return driver.find_element_by_xpath(xpath).text
     except Exception:
