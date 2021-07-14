@@ -12,8 +12,16 @@ $ python3 -m venv .venv
 
 #### 立ち上げ
 
+Mac
+
 ```
 $ source .venv/bin/activate
+```
+
+windows
+
+```
+$ source .venv/Scripts/Activate
 ```
 
 ## 使用ライブラリ一括インストール
